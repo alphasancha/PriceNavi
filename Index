@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>端末価格ナビ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: #f8fafc;
+      --header-bg: #1e293b;
+      --card-bg: #ffffff;
+      --input-bg: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --brand-au: #ff6600;
+      --brand-uq: #0093dd;
+    }
+
+    body {
+      background-color: var(--bg-gradient);
+      color: var(--text-main);
+      font-family: 'M PLUS Rounded 1c', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
+      padding-bottom: 24px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .top-header {
+      background-color: var(--header-bg);
+      color: #fff;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .icon-badge {
+      background: linear-gradient(135deg, #ff6600, #ff8533);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.9rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(255, 102, 0, 0.4);
+    }
+    .title-group .main-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      line-height: 1.1;
+      letter-spacing: 0.03em;
+    }
+    .title-group .sub-title {
+      font-size: 0.65rem;
+      color: #94a3b8;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+    }
+    .header-time {
+      background: rgba(255,255,255,0.1);
+      padding: 5px 10px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      white-space: nowrap;
+    }
+
+    .app-container {
+      padding: 12px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .filter-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      margin-bottom: 14px;
+      border-top: 5px solid var(--brand-au);
+      transition: border-color 0.3s ease;
+    }
+
+    .search-input-group {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .search-input-group .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 1rem;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .search-input {
+      background-color: var(--input-bg);
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px 14px 12px 42px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      width: 100%;
+      color: var(--text-main);
+    }
+    .search-input:focus {
+      outline: none;
+      background-color: #fff;
+      border-color: var(--brand-au);
+      box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.15);
+    }
+
+    .autocomplete-items {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      z-index: 100;
+      margin-top: 4px;
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+    }
+    .autocomplete-items div {
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+    }
+    .autocomplete-items div:hover {
+      background-color: #fff7ed;
+      color: var(--brand-au);
+      font-weight: 700;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .carrier-segment {
+      background-color: var(--input-bg);
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 4px;
+      display: flex;
+      margin-bottom: 14px;
+    }
+    .segment-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 8px 0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      border-radius: 10px;
+    }
+    .segment-btn.active {
+      background-color: #fff;
+      color: var(--text-main);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .segment-btn.active[data-carrier="au"] { color: var(--brand-au); }
+    .segment-btn.active[data-carrier="UQ"] { color: var(--brand-uq); }
+
+    .select-custom {
+      background-color: var(--input-bg);
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+      width: 100%;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+    .select-custom:focus {
+      border-color: var(--brand-au);
+      box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.15);
+      outline: none;
+    }
+    .select-custom.active-method {
+      background-color: #fff7ed;
+      color: var(--brand-au);
+      border-color: #ffedd5;
+    }
+
+    .meta-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px;
+      margin-bottom: 10px;
+    }
+    .count-text {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .count-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #cbd5e1;
+      border-radius: 50%;
+    }
+    .sub-guide {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .device-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      border: 1px solid #e2e8f0;
+      cursor: pointer;
+    }
+    .device-card:active { transform: scale(0.98); }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+    .model-name {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.25;
+    }
+    
+    .badge-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 4px 9px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+    .badge-au { background-color: #fff7ed; color: var(--brand-au); border: 1px solid #ffedd5; }
+    .badge-uq { background-color: #f0f9ff; color: var(--brand-uq); border: 1px solid #bae6fd; }
+
+    .badge-contract {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 4px 9px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+    .badge-mnp { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .badge-new { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    .badge-u18 { background-color: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; }
+    .badge-cellup { background-color: #fffbe2; color: #b45309; border: 1px solid #fef3c7; }
+    .badge-change { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .badge-default { background-color: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+    
+    .grid-info {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      background-color: #f8fafc;
+      padding: 8px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      text-align: center;
+      border: 1px solid #f1f5f9;
+    }
+    .grid-item .g-label {
+      font-size: 0.62rem;
+      color: #64748b;
+      font-weight: 700;
+      display: block;
+    }
+    .grid-item .g-val {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .main-price-box {
+      background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+      padding: 10px 14px;
+      border-radius: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #fed7aa;
+    }
+    .main-price-box.uq-theme {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border-color: #bae6fd;
+    }
+    .main-price-label { font-size: 0.8rem; font-weight: 800; color: #9a3412; }
+    .main-price-box.uq-theme .main-price-label { color: #0369a1; }
+    .main-price-val { font-size: 1.2rem; font-weight: 800; color: var(--brand-au); }
+    .main-price-box.uq-theme .main-price-val { color: var(--brand-uq); }
+
+    .modal-content {
+      border-radius: 24px 24px 0 0;
+      border: none;
+    }
+    .modal-header {
+      border-bottom: 1px solid #f1f5f9;
+      padding: 16px;
+      background-color: #f8fafc;
+    }
+    .modal-group-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      margin-bottom: 6px;
+      border-left: 4px solid var(--brand-au);
+      background: #fff7ed;
+      color: var(--brand-au);
+    }
+    .modal-group-title.uq-theme {
+      background: #f0f9ff;
+      color: var(--brand-uq);
+      border-left-color: var(--brand-uq);
+    }
+    .modal-table {
+      width: 100%;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+    .modal-table th {
+      width: 48%;
+      background-color: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      padding: 6px 10px;
+      border: 1px solid #e2e8f0;
+    }
+    .modal-table td {
+      padding: 6px 10px;
+      border: 1px solid #e2e8f0;
+      font-weight: 600;
+    }
+    .indent-row th { padding-left: 20px; font-weight: 500; color: #64748b; }
+    .note-text {
+      font-size: 0.7rem;
+      color: #64748b;
+      margin-top: 2px;
+      margin-bottom: 10px;
+      padding-left: 4px;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+    
+    .price-toggle-group {
+      float: right;
+      display: flex;
+      gap: 3px;
+    }
+    .price-toggle-btn {
+      font-size: 0.62rem;
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .price-toggle-btn:hover {
+      background: #e2e8f0;
+    }
+    .price-toggle-btn.active-mode {
+      background: #334155;
+      color: #ffffff;
+      border-color: #334155;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    .action-buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      background-color: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .action-btn:hover {
+      background-color: #e2e8f0;
+      color: #0f172a;
+      border-color: #94a3b8;
+    }
+
+    @media (min-width: 576px) {
+      .action-buttons-container {
+        flex-direction: row; 
+      }
+      .action-btn {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-header" id="topHeader">
+    <div class="header-brand" onclick="resetApp()">
+      <div class="icon-badge" id="headerIcon">速</div>
+      <div class="title-group">
+        <div class="main-title">端末価格ナビ</div>
+        <div class="sub-title">Price Search Navi</div>
+      </div>
+    </div>
+    <div class="header-time" id="lastUpdateText">最終更新：読込中...</div>
+  </div>
+
+  <div class="app-container">
+    <div class="filter-card" id="filterCard">
+      <div class="search-input-group">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="機種名 ※大文字小文字スペース問わず">
+        <div id="autocompleteList" class="autocomplete-items"></div>
+      </div>
+
+      <label class="section-label">ブランド</label>
+      <div class="carrier-segment">
+        <button class="segment-btn active" data-carrier="" onclick="setCarrier('')">すべて</button>
+        <button class="segment-btn" data-carrier="au" onclick="setCarrier('au')">au</button>
+        <button class="segment-btn" data-carrier="UQ" onclick="setCarrier('UQ')">UQ</button>
+      </div>
+
+      <div class="row g-2">
+        <div class="col-6">
+          <label class="section-label">契約区分</label>
+          <select id="contractSelect" class="select-custom">
+            <option value="">すべて</option>
+            <option value="MNP">MNP</option>
+            <option value="通常新規">通常新規</option>
+            <option value="U18新規">U18新規</option>
+            <option value="セルアップ">セルアップ</option>
+            <option value="機種変更">機種変更</option>
+          </select>
+        </div>
+        <div class="col-6">
+          <label class="section-label" id="methodLabel" style="color: var(--brand-au);">購入方法 ●</label>
+          <select id="methodSelect" class="select-custom active-method">
+            <option value="">すべて</option>
+            <option value="一括">一括</option>
+            <option value="通常分割">通常分割</option>
+            <option value="スマトク" selected>スマトク</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta-bar">
+      <div class="count-text">
+        <span class="count-dot" id="statusDot"></span>
+        <span id="resultCount">読み込み中...</span>
+      </div>
+      <div class="sub-guide">タップで価格詳細を表示</div>
+    </div>
+
+    <div class="card-list" id="resultList"></div>
+  </div>
+
+  <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+      <div class="modal-content shadow-lg">
+        <div class="modal-header" id="modalHeader">
+          <h5 class="modal-title fw-bold fs-6" id="modalTitle">端末詳細情報</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body px-3 py-2" id="modalDetailBody"></div>
+        <div class="modal-footer py-2">
+          <button type="button" class="btn btn-secondary btn-sm w-100 rounded-pill" data-bs-dismiss="modal">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let allData = [];
+    let uniqueModels = [];
+    let filteredData = [];
+    let currentCarrier = "";
+    let detailModalInstance = null;
+
+    window.onload = function() {
+      detailModalInstance = new bootstrap.Modal(document.getElementById('detailModal'));
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          console.log("受け取った生データ:", res);
+
+          if (!res) {
+            document.getElementById("statusDot").style.backgroundColor = "#ef4444";
+            document.getElementById("resultCount").textContent = "データが空です";
+            return;
+          }
+
+          let rawItems = [];
+          let rawLastUpdate = "";
+
+          if (Array.isArray(res)) {
+            rawItems = res;
+          } else {
+            rawItems = res.items || res.data || [];
+            rawLastUpdate = res.lastUpdate || "";
+          }
+
+          if (rawItems.length === 0) {
+            document.getElementById("statusDot").style.backgroundColor = "#ef4444";
+            document.getElementById("resultCount").textContent = "データがありません";
+            return;
+          }
+
+          allData = rawItems.map(item => {
+            let cleanItem = {};
+            for (let key in item) {
+              if (key && String(key).trim() !== "") {
+                cleanItem[String(key).trim()] = item[key];
+              }
+            }
+            return cleanItem;
+          });
+          
+          if (rawLastUpdate) {
+            let dateObj = new Date(rawLastUpdate);
+            if (!isNaN(dateObj.getTime())) {
+              let y = dateObj.getFullYear();
+              let m = String(dateObj.getMonth() + 1).padStart(2, '0');
+              let d = String(dateObj.getDate()).padStart(2, '0');
+              document.getElementById("lastUpdateText").textContent = `最終更新：${y}年${m}月${d}日`;
+            } else {
+              document.getElementById("lastUpdateText").textContent = `最終更新：${rawLastUpdate}`;
+            }
+          } else {
+            document.getElementById("lastUpdateText").textContent = `最終更新：-`;
+          }
+
+          document.getElementById("statusDot").style.backgroundColor = "#22c55e";
+          initAutocompleteModels();
+          filterAndRender();
+        })
+        .withFailureHandler(function(err) {
+          document.getElementById("statusDot").style.backgroundColor = "#ef4444";
+          document.getElementById("resultCount").textContent = "通信・取得失敗";
+          console.error("通信エラー詳細:", err);
+        })
+        .getDatabaseData();
+    };
+
+    function resetApp() {
+      document.getElementById("searchInput").value = "";
+      setCarrier("");
+      document.getElementById("contractSelect").value = "";
+      document.getElementById("methodSelect").value = "スマトク";
+      filterAndRender();
+    }
+
+    function setCarrier(val) {
+      currentCarrier = val;
+      const btns = document.querySelectorAll('.segment-btn');
+      btns.forEach(btn => {
+        btn.classList.remove('active');
+        if(btn.getAttribute('data-carrier') === val) {
+          btn.classList.add('active');
+        }
+      });
+
+      const headerIcon = document.getElementById("headerIcon");
+      const filterCard = document.getElementById("filterCard");
+      const methodLabel = document.getElementById("methodLabel");
+      const methodSelect = document.getElementById("methodSelect");
+      const searchInput = document.getElementById("searchInput");
+
+      if (val === 'UQ') {
+        headerIcon.style.background = "linear-gradient(135deg, #0093dd, #38bdf8)";
+        filterCard.style.borderTopColor = "#0093dd";
+        methodLabel.style.color = "#0093dd";
+        methodSelect.style.borderColor = "#bae6fd";
+        methodSelect.style.backgroundColor = "#f0f9ff";
+        methodSelect.style.color = "#0093dd";
+        searchInput.style.borderColor = "#bae6fd";
+      } else {
+        headerIcon.style.background = "linear-gradient(135deg, #ff6600, #ff8533)";
+        filterCard.style.borderTopColor = "#ff6600";
+        methodLabel.style.color = "#ff6600";
+        methodSelect.style.borderColor = "#fed7aa";
+        methodSelect.style.backgroundColor = "#fff7ed";
+        methodSelect.style.color = "#ff6600";
+        searchInput.style.borderColor = (val === 'au' ? "#fed7aa" : "#e2e8f0");
+      }
+
+      filterAndRender();
+    }
+
+    function normalizeText(text) {
+      if (!text) return "";
+      let str = String(text).toLowerCase();
+      const romanMap = {
+        'ⅰ': 'i', 'ⅱ': 'ii', 'ⅲ': 'iii', 'ⅳ': 'iv', 'ⅴ': 'v',
+        'Ⅵ': 'vi', 'Ⅶ': 'vii', 'Ⅷ': 'viii', 'Ⅸ': 'ix', 'Ⅹ': 'x',
+        'i': 'i', 'v': 'v', 'x': 'x'
+      };
+      str = str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(s) {
+        return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+      });
+      for (let r in romanMap) {
+        str = str.split(r).join(romanMap[r]);
+      }
+      str = str.replace(/[\s \-_]/g, "");
+      return str;
+    }
+
+    function normalizeContractName(val) {
+      if (!val) return "";
+      let s = String(val).trim();
+      if (s.includes("通常新規_U18") || s === "U18新規") return "U18新規";
+      if (s.includes("番号移行") || s === "セルアップ") return "セルアップ";
+      if (s.includes("MNP")) return "MNP";
+      if (s.includes("通常新規")) return "通常新規";
+      if (s.includes("機種変更")) return "機種変更";
+      return s;
+    }
+
+    function initAutocompleteModels() {
+      const models = [...new Set(allData.map(item => item["機種名"]).filter(Boolean))];
+      uniqueModels = models;
+
+      const searchInput = document.getElementById("searchInput");
+      searchInput.addEventListener("input", function() {
+        closeAllLists();
+        let val = this.value;
+        if (!val) { filterAndRender(); return; }
+
+        let listDiv = document.getElementById("autocompleteList");
+        let normVal = normalizeText(val);
+        
+        let matches = uniqueModels.filter(m => {
+          let normM = normalizeText(m);
+          return normM.includes(normVal);
+        }).slice(0, 10);
+
+        matches.forEach(match => {
+          let item = document.createElement("div");
+          item.innerHTML = match;
+          item.addEventListener("click", function() {
+            searchInput.value = match;
+            closeAllLists();
+            filterAndRender();
+          });
+          listDiv.appendChild(item);
+        });
+
+        filterAndRender();
+      });
+
+      document.getElementById("contractSelect").addEventListener("change", filterAndRender);
+      document.getElementById("methodSelect").addEventListener("change", filterAndRender);
+
+      document.addEventListener("click", function (e) {
+        if (!e.target.closest('.search-input-group')) {
+          closeAllLists();
+        }
+      });
+    }
+
+    function closeAllLists() {
+      document.getElementById("autocompleteList").innerHTML = "";
+    }
+
+    function matchSearch(text, query) {
+      if (!query) return true;
+      let normText = normalizeText(text);
+      let queries = query.trim().split(/[\s ]+/);
+      return queries.every(q => normText.includes(normalizeText(q)));
+    }
+
+    function formatNum(val) {
+      if (val === "" || val === undefined || val === null) return "-";
+      let num = Number(val);
+      if (!isNaN(num)) {
+        return num.toLocaleString() + "円";
+      }
+      return val;
+    }
+
+    function getContractBadgeClass(contractStr) {
+      if (!contractStr) return "badge-default";
+      let normalized = normalizeContractName(contractStr);
+      if (normalized === "MNP") return "badge-mnp";
+      if (normalized === "通常新規") return "badge-new";
+      if (normalized === "U18新規") return "badge-u18";
+      if (normalized === "セルアップ") return "badge-cellup";
+      if (normalized === "機種変更") return "badge-change";
+      return "badge-default";
+    }
+
+    function filterAndRender() {
+      const searchText = document.getElementById("searchInput").value;
+      const selectedContract = document.getElementById("contractSelect").value;
+      const method = document.getElementById("methodSelect").value;
+
+      filteredData = allData.filter(item => {
+        let matchM = matchSearch(item["機種名"], searchText);
+        
+        let rawContractStr = String(item["契約区分"] || "");
+        if (rawContractStr.includes("単体") || rawContractStr.includes("端末単体")) {
+          return false;
+        }
+
+        let rowContractNormalized = normalizeContractName(item["契約区分"]);
+        let matchCt = !selectedContract || rowContractNormalized === selectedContract;
+
+        let carrierVal = String(item["キャリア"] || "");
+        let matchC = false;
+        if (selectedContract === "セルアップ") {
+          matchC = (carrierVal === "au");
+        } else {
+          matchC = !currentCarrier || carrierVal === currentCarrier;
+        }
+
+        return matchM && matchC && matchCt;
+      });
+
+      let containerHtml = "";
+      filteredData.forEach((row, index) => {
+        let limitKey = (method === "スマトク") ? "値引上限(スマトク)" : "値引上限(一括/通常分割)";
+        let priceKey = "一括価格(頭無)";
+        let priceTitle = "一括価格";
+
+        let s1 = 0, s2 = 0, s3 = 0;
+
+        if (method === "スマトク") {
+          priceKey = "スマトク価格(頭有)";
+          priceTitle = "スマトク価格";
+          s1 = Number(row["施策①(スマトク)"] || 0);
+          s2 = Number(row["施策②(スマトク)"] || 0);
+          s3 = Number(row["施策③(スマトク)"] || 0);
+        } else if (method === "通常分割") {
+          priceKey = "通常分割価格(頭有)";
+          priceTitle = "通常分割価格";
+          s1 = Number(row["施策①(通常)"] || 0);
+          s2 = Number(row["施策②(通常)"] || 0);
+          s3 = Number(row["施策③(通常)"] || 0);
+        } else {
+          priceKey = "一括価格(頭有)";
+          priceTitle = "一括価格";
+          s1 = Number(row["施策①(一括)"] || row["施策①"] || 0);
+          s2 = Number(row["施策②(一括)"] || row["施策②"] || 0);
+          s3 = Number(row["施策③(一括)"] || row["施策③"] || 0);
+        }
+
+        let maxDiscount = s1 + s2 + s3;
+        let carrierVal = String(row["キャリア"] || "");
+        let carrierBadgeClass = carrierVal === "UQ" ? "badge-uq" : "badge-au";
+        
+        let rawContract = String(row["契約区分"] || "-");
+        let displayContract = normalizeContractName(rawContract);
+        let contractBadgeClass = getContractBadgeClass(rawContract);
+        let isUqCard = carrierVal === "UQ";
+
+        containerHtml += `
+          <div class="device-card" onclick="openDetailModal(${index})">
+            <div class="card-head">
+              <div class="model-name">${row["機種名"] || "-"}</div>
+              <div class="d-flex gap-1 align-items-center">
+                <span class="badge-pill ${carrierBadgeClass}">${carrierVal || "-"}</span>
+                <span class="badge-contract ${contractBadgeClass}">${displayContract}</span>
+              </div>
+            </div>
+
+            <div class="grid-info">
+              <div class="grid-item">
+                <span class="g-label">店頭価格</span>
+                <span class="g-val">${formatNum(row["店頭価格"])}</span>
+              </div>
+              <div class="grid-item">
+                <span class="g-label">頭金</span>
+                <span class="g-val">${formatNum(row["頭金"])}</span>
+              </div>
+              <div class="grid-item">
+                <span class="g-label">最大値引額</span>
+                <span class="g-val text-success">${formatNum(maxDiscount)}</span>
+              </div>
+              <div class="grid-item">
+                <span class="g-label">値引上限</span>
+                <span class="g-val">${formatNum(row[limitKey])}</span>
+              </div>
+            </div>
+
+            <div class="main-price-box ${isUqCard ? 'uq-theme' : ''}">
+              <span class="main-price-label">${priceTitle}</span>
+              <span class="main-price-val">${formatNum(row[priceKey])}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      if (filteredData.length === 0) {
+        containerHtml = `<div class="text-center py-5 text-muted bg-white rounded-4 shadow-sm">該当する端末が見つかりません</div>`;
+      }
+
+      document.getElementById("resultList").innerHTML = containerHtml;
+      document.getElementById("resultCount").textContent = `${filteredData.length} 件の対象結果`;
+    }
+
+    function openDetailModal(index) {
+      const item = filteredData[index];
+      if (!item) return;
+
+      const method = document.getElementById("methodSelect").value;
+      const carrierVal = String(item["キャリア"] || "");
+      const isUq = carrierVal === "UQ";
+
+      const modalHeader = document.getElementById("modalHeader");
+      if (isUq) {
+        modalHeader.style.backgroundColor = "#f0f9ff";
+        modalHeader.style.color = "#0093dd";
+      } else {
+        modalHeader.style.backgroundColor = "#fff7ed";
+        modalHeader.style.color = "#ff6600";
+      }
+
+      document.getElementById("modalTitle").textContent = `${item["機種名"]}`;
+
+      let rawContract = String(item["契約区分"] || "-");
+      let displayContract = normalizeContractName(rawContract);
+      let groupClass = isUq ? "modal-group-title uq-theme" : "modal-group-title";
+
+      let html = "";
+
+      html += `<div class="${groupClass}">基本情報</div><table class="modal-table">`;
+      html += `<tr><th>機種名</th><td>${item["機種名"] || "-"}</td></tr>`;
+      html += `<tr><th>キャリア</th><td>${carrierVal || "-"}</td></tr>`;
+      html += `<tr><th>契約区分</th><td>${displayContract}</td></tr>`;
+      html += `</table>`;
+
+      html += `<div class="${groupClass}">店頭価格・値引上限</div><table class="modal-table">`;
+      html += `<tr><th>店頭価格</th><td>${formatNum(item["店頭価格"])}</td></tr>`;
+      html += `<tr><th>割賦総額</th><td>${formatNum(item["割賦総額"])}</td></tr>`;
+      html += `<tr><th>頭金</th><td>${formatNum(item["頭金"])}</td></tr>`;
+      html += `<tr><th>残価</th><td>${formatNum(item["残価"])}</td></tr>`;
+      
+      if (!method || method === "スマトク") {
+        html += `<tr><th>値引上限 (スマトク)</th><td>${formatNum(item["値引上限(スマトク)"])}</td></tr>`;
+      }
+      if (!method || method === "一括" || method === "通常分割") {
+        html += `<tr><th>値引上限 (一括/通常)</th><td>${formatNum(item["値引上限(一括/通常分割)"])}</td></tr>`;
+      }
+      html += `</table>`;
+
+      html += `<div class="${groupClass}">最大値引額・施策内訳</div><table class="modal-table">`;
+      if (!method || method === "スマトク") {
+        let s1 = Number(item["施策①(スマトク)"] || 0);
+        let s2 = Number(item["施策②(スマトク)"] || 0);
+        let s3 = Number(item["施策③(スマトク)"] || 0);
+        html += `<tr><th>最大値引 (スマトク)</th><td class="text-success fw-bold">${formatNum(s1 + s2)}</td></tr>`;
+        html += `<tr class="indent-row"><th>├ 施策①</th><td>${formatNum(s1)}</td></tr>`;
+        html += `<tr class="indent-row"><th>├ 施策②</th><td>${formatNum(s2)}</td></tr>`;
+        if (s3 > 0) html += `<tr class="indent-row"><th>└ 施策③</th><td>${formatNum(s3)}</td></tr>`;
+      }
+      if (!method || method === "一括") {
+        let s1 = Number(item["施策①(一括)"] || item["施策①"] || 0);
+        let s2 = Number(item["施策②(一括)"] || item["施策②"] || 0);
+        let s3 = Number(item["施策③(一括)"] || item["施策③"] || 0);
+        html += `<tr><th>最大値引 (一括)</th><td class="text-success fw-bold">${formatNum(s1 + s2)}</td></tr>`;
+        html += `<tr class="indent-row"><th>├ 施策①</th><td>${formatNum(s1)}</td></tr>`;
+        html += `<tr class="indent-row"><th>├ 施策②</th><td>${formatNum(s2)}</td></tr>`;
+        if (s3 > 0) html += `<tr class="indent-row"><th>└ 施策③</th><td>${formatNum(s3)}</td></tr>`;
+      }
+      if (!method || method === "通常分割") {
+        let s1 = Number(item["施策①(通常)"] || 0);
+        let s2 = Number(item["施策②(通常)"] || 0);
+        let s3 = Number(item["施策③(通常)"] || 0);
+        html += `<tr><th>最大値引 (通常分割)</th><td class="text-success fw-bold">${formatNum(s1 + s2)}</td></tr>`;
+        html += `<tr class="indent-row"><th>├ 施策①</th><td>${formatNum(s1)}</td></tr>`;
+        html += `<tr class="indent-row"><th>├ 施策②</th><td>${formatNum(s2)}</td></tr>`;
+        if (s3 > 0) html += `<tr class="indent-row"><th>└ 施策③</th><td>${formatNum(s3)}</td></tr>`;
+      }
+      html += `</table>`;
+      html += `<div class="note-text">※施策によって加入プラン、オプション、利用月数など各種条件あり。</div>`;
+
+      // --- 金額表示エリア ---
+      let headVal = Number(item["頭金"] || 0);
+      let tenkoPrice = Number(item["店頭価格"] || 0);
+      let zanka = Number(item["残価"] || 0);
+      let kappuTotal = Number(item["割賦総額"] || 0);
+
+      let curS1 = 0, curS2 = 0, curS3 = 0;
+      if (method === "スマトク") {
+        curS1 = Number(item["施策①(スマトク)"] || 0);
+        curS2 = Number(item["施策②(スマトク)"] || 0);
+        curS3 = Number(item["施策③(スマトク)"] || 0);
+      } else if (method === "通常分割") {
+        curS1 = Number(item["施策①(通常)"] || 0);
+        curS2 = Number(item["施策②(通常)"] || 0);
+        curS3 = Number(item["施策③(通常)"] || 0);
+      } else {
+        curS1 = Number(item["施策①(一括)"] || item["施策①"] || 0);
+        curS2 = Number(item["施策②(一括)"] || item["施策②"] || 0);
+        curS3 = Number(item["施策③(一括)"] || item["施策③"] || 0);
+      }
+      let currentMaxDiscount = curS1 + curS2 + curS3;
+
+      let allowKoudonBtn = ["新規", "通常新規", "U18新規", "MNP", "セルアップ"].some(c => displayContract.includes(c));
+      let hasDiscount = currentMaxDiscount > 0;
+
+      html += `<div class="${groupClass}" id="priceSectionTitle">`;
+      if (hasDiscount) {
+        html += `値引割賦充当`;
+        html += `<div class="price-toggle-group">`;
+        html += `<button class="price-toggle-btn active-mode" id="btnDiscount" onclick="switchPriceMode('discount', this)">値引割賦充当</button>`;
+        if (allowKoudonBtn) {
+          html += `<button class="price-toggle-btn" id="btnKoudon" onclick="switchPriceMode('koudon', this)">値引頭金充当</button>`;
+        }
+        html += `<button class="price-toggle-btn" id="btnNormal" onclick="switchPriceMode('normal', this)">通常価格</button>`;
+        html += `</div>`;
+      } else {
+        html += `通常価格`;
+      }
+      html += `</div>`;
+
+      if (hasDiscount) {
+        html += `<div id="discountPriceArea"><table class="modal-table">`;
+        if (!method || method === "スマトク") {
+          let stokuNoHead = Number(item["スマトク価格(頭無)"] || 0);
+          let stokuInstallmentTotal = stokuNoHead + zanka;
+
+          let stokuMonthlyAfter = Math.floor(stokuNoHead / 23);
+          let stokuMonthlyFirst = stokuNoHead - (stokuMonthlyAfter * 22);
+
+          let extendMonthlyAfter = Math.floor(zanka / 24);
+          let extendMonthly24th = zanka - (extendMonthlyAfter * 23);
+
+          html += `<tr><th>スマトク実質価格</th><td class="text-primary fw-bold">${formatNum(item["スマトク価格(頭有)"])}</td></tr>`;
+          html += `<tr class="indent-row"><th>頭金</th><td>${formatNum(headVal)}</td></tr>`;
+          html += `<tr class="indent-row"><th>割賦総額</th><td>${formatNum(stokuInstallmentTotal)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 初回分割金</th><td>${formatNum(stokuMonthlyFirst)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 2〜23回目 (×22回)</th><td>${formatNum(stokuMonthlyAfter)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 最終回支払 (残価)</th><td>${formatNum(zanka)}</td></tr>`;
+          html += `<tr><th>延長料金</th><td class="fw-bold">${formatNum(zanka)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 24回目最終回</th><td>${formatNum(extendMonthly24th)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 25〜47回目 (×23回)</th><td>${formatNum(extendMonthlyAfter)}</td></tr>`;
+        }
+        if (!method || method === "一括") {
+          html += `<tr><th>一括価格</th><td class="text-primary fw-bold">${formatNum(item["一括価格(頭有)"])}</td></tr>`;
+        }
+        if (!method || method === "通常分割") {
+          let normalNoHeadVal = Number(item["通常分割価格(頭無)"] || 0);
+          let normalMonthlyAfterVal = Math.floor(normalNoHeadVal / 24);
+          let normalMonthlyFirstVal = normalNoHeadVal - (normalMonthlyAfterVal * 23);
+
+          html += `<tr><th>通常分割価格</th><td class="text-primary fw-bold">${formatNum(item["通常分割価格(頭有)"])}</td></tr>`;
+          html += `<tr class="indent-row"><th>頭金</th><td>${formatNum(headVal)}</td></tr>`;
+          html += `<tr class="indent-row"><th>割賦総額</th><td>${formatNum(normalNoHeadVal)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 初回分割金</th><td>${formatNum(normalMonthlyFirstVal)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 2〜24回目 (×23回)</th><td>${formatNum(normalMonthlyAfterVal)}</td></tr>`;
+        }
+        html += `</table></div>`;
+
+        html += `<div id="koudonPriceArea" style="display: none;"><table class="modal-table">`;
+        if (!method || method === "スマトク") {
+          let maxDiscount = currentMaxDiscount;
+
+          let remainDiscount = maxDiscount;
+          let finalHead = headVal - remainDiscount;
+          if (finalHead < 0) {
+            remainDiscount = Math.abs(finalHead);
+            finalHead = 0;
+          } else {
+            remainDiscount = 0;
+          }
+
+          let finalKappuTotal = kappuTotal - remainDiscount;
+          if (finalKappuTotal < 0) finalKappuTotal = 0;
+
+          let monthly2_23_k = Math.floor((finalKappuTotal - zanka) / 23);
+          let firstMonthly_k = (finalKappuTotal - zanka) - (monthly2_23_k * 22);
+
+          let extendMonthlyAfter_k = Math.floor(zanka / 24);
+          let extendMonthly24th_k = zanka - (extendMonthlyAfter_k * 23);
+
+          let finalJisshitsu = finalKappuTotal - zanka + finalHead;
+
+          html += `<tr><th>スマトク実質価格</th><td class="text-success fw-bold">${formatNum(finalJisshitsu)}</td></tr>`;
+          html += `<tr class="indent-row"><th>頭金</th><td>${formatNum(finalHead)}</td></tr>`;
+          html += `<tr class="indent-row"><th>割賦総額</th><td>${formatNum(finalKappuTotal)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 初回分割金</th><td>${formatNum(firstMonthly_k)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 2〜23回目 (×22回)</th><td>${formatNum(monthly2_23_k)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 最終回支払 (残価)</th><td>${formatNum(zanka)}</td></tr>`;
+          html += `<tr><th>延長料金</th><td class="fw-bold">${formatNum(zanka)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 24回目最終回</th><td>${formatNum(extendMonthly24th_k)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 25〜47回目 (×23回)</th><td>${formatNum(extendMonthlyAfter_k)}</td></tr>`;
+        }
+        if (!method || method === "一括") {
+          let maxDiscount = currentMaxDiscount;
+
+          let remainDiscount = maxDiscount;
+          let finalHead = headVal - remainDiscount;
+          if (finalHead < 0) {
+            remainDiscount = Math.abs(finalHead);
+            finalHead = 0;
+          } else {
+            remainDiscount = 0;
+          }
+          let finalTenko = tenkoPrice - remainDiscount;
+          if (finalTenko < 0) finalTenko = 0;
+          let finalIkkatsu = finalTenko + finalHead;
+
+          html += `<tr><th>一括価格</th><td class="text-success fw-bold">${formatNum(finalIkkatsu)}</td></tr>`;
+          html += `<tr class="indent-row"><th>頭金</th><td>${formatNum(finalHead)}</td></tr>`;
+          html += `<tr class="indent-row"><th>本体価格（店頭価格）</th><td>${formatNum(finalTenko)}</td></tr>`;
+        }
+        if (!method || method === "通常分割") {
+          let maxDiscount = currentMaxDiscount;
+
+          let remainDiscount = maxDiscount;
+          let finalHead = headVal - remainDiscount;
+          if (finalHead < 0) {
+            remainDiscount = Math.abs(finalHead);
+            finalHead = 0;
+          } else {
+            remainDiscount = 0;
+          }
+          let finalTenko = tenkoPrice - remainDiscount;
+          if (finalTenko < 0) finalTenko = 0;
+          let finalDivTotal = finalTenko + finalHead;
+
+          let normalDivMonthlyAfter = Math.floor(finalTenko / 24);
+          let normalDivMonthlyFirst = finalTenko - (normalDivMonthlyAfter * 23);
+
+          html += `<tr><th>通常分割価格</th><td class="text-success fw-bold">${formatNum(finalDivTotal)}</td></tr>`;
+          html += `<tr class="indent-row"><th>頭金</th><td>${formatNum(finalHead)}</td></tr>`;
+          html += `<tr class="indent-row"><th>割賦総額</th><td>${formatNum(finalTenko)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 初回分割金</th><td>${formatNum(normalDivMonthlyFirst)}</td></tr>`;
+          html += `<tr class="indent-row"><th>└ 2〜24回目 (×23回)</th><td>${formatNum(normalDivMonthlyAfter)}</td></tr>`;
+        }
+        html += `</table></div>`;
+      }
+
+      html += `<div id="normalPriceArea" ${hasDiscount ? 'style="display: none;"' : ''}><table class="modal-table">`;
+      if (!method || method === "スマトク") {
+        let normalStokuJisshitsu = tenkoPrice - zanka;
+        let monthly2_23 = Math.floor((kappuTotal - zanka) / 23);
+        let firstMonthly = (kappuTotal - zanka) - (monthly2_23 * 22);
+
+        let extendMonthlyAfter = Math.floor(zanka / 24);
+        let extendMonthly24th = zanka - (extendMonthlyAfter * 23);
+
+        html += `<tr><th>スマトク実質価格</th><td class="text-danger fw-bold">${formatNum(normalStokuJisshitsu)}</td></tr>`;
+        html += `<tr class="indent-row"><th>頭金</th><td>${formatNum(headVal)}</td></tr>`;
+        html += `<tr class="indent-row"><th>割賦総額</th><td>${formatNum(kappuTotal)}</td></tr>`;
+        html += `<tr class="indent-row"><th>└ 初回分割金</th><td>${formatNum(firstMonthly)}</td></tr>`;
+        html += `<tr class="indent-row"><th>└ 2〜23回目 (×22回)</th><td>${formatNum(monthly2_23)}</td></tr>`;
+        html += `<tr class="indent-row"><th>└ 最終回支払 (残価)</th><td>${formatNum(zanka)}</td></tr>`;
+        html += `<tr><th>延長料金</th><td class="fw-bold">${formatNum(zanka)}</td></tr>`;
+        html += `<tr class="indent-row"><th>└ 24回目最終回</th><td>${formatNum(extendMonthly24th)}</td></tr>`;
+        html += `<tr class="indent-row"><th>└ 25〜47回目 (×23回)</th><td>${formatNum(extendMonthlyAfter)}</td></tr>`;
+      }
+      if (!method || method === "一括") {
+        let normalIkkatsuWithHead = tenkoPrice + headVal;
+        html += `<tr><th>一括価格</th><td class="text-danger fw-bold">${formatNum(normalIkkatsuWithHead)}</td></tr>`;
+        html += `<tr class="indent-row"><th>頭金</th><td>${formatNum(headVal)}</td></tr>`;
+        html += `<tr class="indent-row"><th>本体価格（店頭価格）</th><td>${formatNum(tenkoPrice)}</td></tr>`;
+      }
+      if (!method || method === "通常分割") {
+        let normalDivTotalWithHead = tenkoPrice + headVal;
+        let normalDivMonthlyAfter = Math.floor(tenkoPrice / 24);
+        let normalDivMonthlyFirst = tenkoPrice - (normalDivMonthlyAfter * 23);
+
+        html += `<tr><th>通常分割価格</th><td class="text-danger fw-bold">${formatNum(normalDivTotalWithHead)}</td></tr>`;
+        html += `<tr class="indent-row"><th>頭金</th><td>${formatNum(headVal)}</td></tr>`;
+        html += `<tr class="indent-row"><th>割賦総額</th><td>${formatNum(tenkoPrice)}</td></tr>`;
+        html += `<tr class="indent-row"><th>└ 初回分割金</th><td>${formatNum(normalDivMonthlyFirst)}</td></tr>`;
+        html += `<tr class="indent-row"><th>└ 2〜24回目 (×23回)</th><td>${formatNum(normalDivMonthlyAfter)}</td></tr>`;
+      }
+      html += `</table></div>`;
+
+      // --- 機種名のクリーニング処理 ---
+      let rawModelName = item["機種名"] || "";
+      let cleanName = rawModelName
+        .replace(/【[^】]*】/g, "")
+        .replace(/au Certified/gi, "")
+        .replace(/\(X\)|（X）/gi, "")
+        .trim();
+      cleanName = cleanName.replace(/\b\d+\s?(GB|TB)\b/gi, "").trim();
+      cleanName = cleanName.replace(/\s+/g, " ");
+
+      // iPhone・Pixel以外は型番（英字2〜4桁＋数字2〜3桁等）を自動抽出
+      let searchKeywordName = cleanName;
+      let isIphoneOrPixel = /iPhone|Pixel/i.test(cleanName);
+
+      if (!isIphoneOrPixel) {
+        // 例: SOG18, SCG26, SHG11, OPG04 などのキャリア型番パターンを探す
+        let modelMatch = cleanName.match(/\b[A-Za-z]{2,4}\d{2,3}[A-Za-z]?\b/);
+        if (modelMatch) {
+          searchKeywordName = modelMatch[0];
+        }
+      }
+
+      // 1. 画像検索URL
+      let imageSearchKeyword = encodeURIComponent(cleanName + " カラーバリエーション");
+      let googleImageSearchUrl = "https://www.google.com/search?q=" + imageSearchKeyword + "&tbm=isch";
+
+      // 2. スペック検索URL（スマタブinfo）
+      let specSearchParam = encodeURIComponent(searchKeywordName);
+      let specSearchUrl = "https://smatabinfo.jp/device/search?check-share=&check-info=&shape=0&maker=0&name=" + specSearchParam + "&carrier=0&year_start=0&month_start=0&year_end=0&month_end=0&check-os=&os=0&os_and_os_version=0&check-build=&model_name=&cpu=0&check-display=&display_dpi_horizontal_start=0&display_dpi_horizontal_end=0&display_dpi_vertical_start=0&display_dpi_vertical_end=0&display_size_start=0&display_size_end=0&check-other=&bluetooth_version=0&comm_type=0&search=search";
+
+      // --- 下部のアクションボタン群（スマホ：縦並び、PC：横並び / rel="noreferrer"でリファラー秘匿） ---
+      html += '<div class="action-buttons-container">';
+      
+      // 画像検索ボタン
+      html += '<a href="' + googleImageSearchUrl + '" target="_blank" rel="noreferrer noopener" class="action-btn">';
+      html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+      html += '画像検索（カラバリ）';
+      html += '</a>';
+
+      // スペック検索ボタン
+      html += '<a href="' + specSearchUrl + '" target="_blank" rel="noreferrer noopener" class="action-btn">';
+      html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
+      html += 'スペックを検索';
+      html += '</a>';
+
+      html += '</div>';
+
+      document.getElementById("modalDetailBody").innerHTML = html;
+      detailModalInstance.show();
+    }
+
+    function switchPriceMode(mode, btn) {
+      const discountArea = document.getElementById("discountPriceArea");
+      const koudonArea = document.getElementById("koudonPriceArea");
+      const normalArea = document.getElementById("normalPriceArea");
+      const titleContainer = document.getElementById("priceSectionTitle");
+
+      const btnDiscount = document.getElementById("btnDiscount");
+      const btnKoudon = document.getElementById("btnKoudon");
+      const btnNormal = document.getElementById("btnNormal");
+
+      if (discountArea) discountArea.style.display = "none";
+      if (koudonArea) koudonArea.style.display = "none";
+      if (normalArea) normalArea.style.display = "none";
+
+      if (btnDiscount) btnDiscount.classList.remove("active-mode");
+      if (btnKoudon) btnKoudon.classList.remove("active-mode");
+      if (btnNormal) btnNormal.classList.remove("active-mode");
+
+      btn.classList.add("active-mode");
+
+      if (mode === 'discount') {
+        if (discountArea) discountArea.style.display = "block";
+        titleContainer.childNodes[0].nodeValue = "値引割賦充当 ";
+      } else if (mode === 'koudon') {
+        if (koudonArea) koudonArea.style.display = "block";
+        titleContainer.childNodes[0].nodeValue = "値引頭金充当 ";
+      } else if (mode === 'normal') {
+        if (normalArea) normalArea.style.display = "block";
+        titleContainer.childNodes[0].nodeValue = "通常価格 ";
+      }
+    }
+  </script>
+</body>
+</html>
